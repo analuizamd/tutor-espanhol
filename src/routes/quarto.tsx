@@ -6,6 +6,7 @@ import { ShopList } from "@/components/room/ShopList";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { APP_NAME } from "@/config/app";
+import { SHOP_ITEMS } from "@/data/shop";
 import { useAppState } from "@/state/AppState";
 
 export const Route = createFileRoute("/quarto")({
@@ -30,7 +31,7 @@ function RoomPage() {
         <div>
           <h1 className="text-3xl font-extrabold">Meu quarto</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Toque num espaço para colocar, trocar ou tirar um objeto. {data.owned.length} de 10 objetos.
+            Toque num espaço para colocar, trocar ou tirar um objeto. {data.owned.length} de {SHOP_ITEMS.length} objetos.
           </p>
         </div>
         <Sheet>

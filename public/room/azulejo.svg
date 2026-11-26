@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect x="2" y="2" width="96" height="96" rx="4" fill="#f7f3ea"/>
+  <rect x="2" y="2" width="96" height="96" rx="4" fill="none" stroke="#1d4e89" stroke-width="4"/>
+  <g fill="#1d4e89">
+    <path d="M6 6 h18 a18 18 0 0 1 -18 18 Z"/><path d="M94 6 v18 a18 18 0 0 1 -18 -18 Z"/>
+    <path d="M6 94 v-18 a18 18 0 0 1 18 18 Z"/><path d="M94 94 h-18 a18 18 0 0 1 18 -18 Z"/>
+  </g>
+  <rect x="28" y="28" width="44" height="44" fill="#2f6db5"/>
+  <rect x="28" y="28" width="44" height="44" fill="#2f6db5" transform="rotate(45 50 50)"/>
+  <circle cx="50" cy="50" r="16" fill="#f7f3ea"/>
+  <g fill="#e9a23b">
+    <circle cx="50" cy="50" r="6"/>
+    <ellipse cx="50" cy="38" rx="3" ry="5"/><ellipse cx="50" cy="62" rx="3" ry="5"/><ellipse cx="38" cy="50" rx="5" ry="3"/><ellipse cx="62" cy="50" rx="5" ry="3"/>
+  </g>
+  <g fill="#1d4e89"><circle cx="50" cy="12" r="3"/><circle cx="50" cy="88" r="3"/><circle cx="12" cy="50" r="3"/><circle cx="88" cy="50" r="3"/></g>
+</svg>

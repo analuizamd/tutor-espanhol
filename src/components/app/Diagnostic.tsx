@@ -48,8 +48,8 @@ export function Diagnostic() {
             </span>
             <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">¡Bienvenido! Vamos ver o que você já sabe.</h1>
             <p className="mt-3 text-muted-foreground">
-              São {total} questões de espanhol no estilo ENEM de múltipla escolha. Não vale nota: o {APP_NAME} usa suas respostas para
-              escolher por onde começar.
+              São {total} perguntas rápidas de espanhol (nível A1 e A2). Não vale nota e tudo bem não saber: o {APP_NAME} usa
+              suas respostas para escolher por qual aula você começa.
             </p>
             <Button variant="hero" size="xl" className="mt-6 w-full sm:w-auto" onClick={() => setStep("quiz")}>
               Começar diagnóstico <ArrowRight />
@@ -71,7 +71,9 @@ export function Diagnostic() {
                 style={{ width: `${((index + 1) / total) * 100}%` }}
               />
             </div>
-            <p className="mt-5 whitespace-pre-line rounded-lg bg-secondary p-4 text-base leading-relaxed" lang="es">{current.text}</p>
+            {current.text && (
+              <p className="mt-5 whitespace-pre-line rounded-lg bg-secondary p-4 text-base leading-relaxed" lang="es">{current.text}</p>
+            )}
             <h2 lang="es" className="mt-6 text-2xl font-bold leading-snug">{current.prompt}</h2>
             <div className="mt-5 flex flex-col gap-3" role="radiogroup">
               {current.options.map((opt, i) => {
@@ -122,7 +124,7 @@ function Summary({ results, onStart }: { results: DiagnosticResult[]; onStart: (
       <h1 className="text-3xl font-extrabold">¡Listo! Seu ponto de partida</h1>
       <p className="mt-2 text-muted-foreground">
         Você acertou <strong className="text-foreground">{correct} de {results.length}</strong>. Cada acerto vale 25 pontos
-        no conceito.
+        na aula correspondente.
       </p>
       <ul className="mt-6 flex flex-col gap-3">
         {CONCEPTS.map((c) => {

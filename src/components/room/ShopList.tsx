@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 import { Coin } from "@/components/app/CoinCounter";
 import { Button } from "@/components/ui/button";
-import { SHOP_ITEMS } from "@/data/shop";
+import { COUNTRY_FLAG_LABEL, SHOP_ITEMS } from "@/data/shop";
 import { useAppState } from "@/state/AppState";
 
 /** Cards da Loja cultural (Argentina, Uruguai, Espanha). */
@@ -17,11 +17,14 @@ export function ShopList() {
         return (
           <li key={item.id} className="flex flex-col rounded-2xl border border-border bg-card p-3 shadow-soft">
             <div className="flex items-start gap-3">
-              <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-sand text-3xl">{item.emoji}</div>
+              <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-sand p-1.5">
+                <img src={item.image} alt="" className="max-h-full max-w-full object-contain" />
+              </div>
               <div className="min-w-0 flex-1">
                 <p className="font-display font-bold leading-tight">{item.name}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {item.flag} {item.country}
+                  <span className="mr-1 rounded bg-secondary px-1 py-0.5 text-[0.6rem] font-bold">{COUNTRY_FLAG_LABEL[item.country]}</span>
+                  {item.country}
                 </p>
               </div>
             </div>
@@ -40,7 +43,7 @@ export function ShopList() {
                   size="touch"
                   disabled={!affordable}
                   onClick={() => {
-                    if (buyItem(item.id)) toast.success(`${item.emoji} ${item.name} chegou ao seu quarto!`);
+                    if (buyItem(item.id)) toast.success(`${item.name} chegou ao seu quarto!`);
                   }}
                   title={affordable ? undefined : `Faltam ${item.price - data.coins} moedas`}
                 >

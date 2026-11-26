@@ -1,0 +1,9 @@
+node_modules
+dist
+.output
+.vinxi
+.nitro
+.tanstack
+*.log
+.DS_Store
+package-lock.json

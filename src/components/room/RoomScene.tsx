@@ -1,6 +1,6 @@
 /**
  * Cena 2D do quarto feita só com CSS (parede, janela, prateleira, mesa, chão).
- * Os objetos comprados aparecem nos espaços pré-definidos (ROOM_SLOTS).
+ * Os objetos comprados (ilustrações em public/room/) aparecem nos espaços pré-definidos (ROOM_SLOTS).
  * Em modo editável, cada espaço pode receber/trocar/remover um objeto.
  */
 import { Plus, X } from "lucide-react";
@@ -89,31 +89,34 @@ function Slot({
   const item = itemId ? SHOP_BY_ID[itemId] : undefined;
   if (!editable && !item) return null;
 
+  // Na parede o ponto é o centro do objeto; nos outros espaços é a base (o objeto "apoia" na superfície).
+  const anchor = slot.kind === "parede" ? "-translate-x-1/2 -translate-y-1/2" : "-translate-x-1/2 -translate-y-full";
   const style = { left: `${slot.left}%`, top: `${slot.top}%` };
+  const box = { width: `${slot.w}cqw`, height: `${slot.h}cqw` };
   const content = item ? (
-    <span
-      className={cn(
-        "block select-none leading-none drop-shadow-md transition-transform",
-        slot.kind === "parede" && "rounded-full bg-card/70 p-[0.8cqw] ring-[0.4cqw] ring-room-wood/60",
-        editable && "hover:scale-110",
-      )}
-      style={{ fontSize: `${slot.size}cqw` }}
-      title={item.name}
-    >
-      {item.emoji}
+    <span className={cn("flex items-end justify-center transition-transform", slot.kind === "parede" && "items-center", editable && "hover:scale-105")} style={box}>
+      <img
+        src={item.image}
+        alt={item.name}
+        title={item.name}
+        draggable={false}
+        className="max-h-full max-w-full select-none object-contain drop-shadow-[0_0.6cqw_0.6cqw_rgba(0,0,0,0.25)]"
+      />
     </span>
   ) : (
-    <span
-      className="flex items-center justify-center rounded-full border-2 border-dashed border-foreground/25 bg-card/40 text-foreground/40 transition hover:border-primary hover:text-primary"
-      style={{ width: `${slot.size * 0.9}cqw`, height: `${slot.size * 0.9}cqw` }}
-    >
-      <Plus className="size-[45%]" />
+    <span className={cn("flex justify-center", slot.kind === "parede" ? "items-center" : "items-end")} style={box}>
+      <span
+        className="flex items-center justify-center rounded-full border-2 border-dashed border-foreground/25 bg-card/40 text-foreground/40 transition hover:border-primary hover:text-primary"
+        style={{ width: `${Math.min(slot.w, slot.h) * 0.6}cqw`, height: `${Math.min(slot.w, slot.h) * 0.6}cqw` }}
+      >
+        <Plus className="size-[45%]" />
+      </span>
     </span>
   );
 
   if (!editable) {
     return (
-      <div className="absolute -translate-x-1/2 -translate-y-1/2" style={style} aria-label={item?.name}>
+      <div className={cn("absolute", anchor)} style={style}>
         {content}
       </div>
     );
@@ -126,7 +129,7 @@ function Slot({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="absolute -translate-x-1/2 -translate-y-1/2" style={style} aria-label={item ? `${item.name} — ${slot.label}` : `Espaço vazio — ${slot.label}`}>
+        <button className={cn("absolute", anchor)} style={style} aria-label={item ? `${item.name} — ${slot.label}` : `Espaço vazio — ${slot.label}`}>
           {content}
         </button>
       </PopoverTrigger>
@@ -147,7 +150,7 @@ function Slot({
                       opt.id === itemId && "bg-primary-soft font-semibold",
                     )}
                   >
-                    <span className="text-xl">{opt.emoji}</span>
+                    <img src={opt.image} alt="" className="size-8 object-contain" />
                     <span className="flex-1">{opt.name}</span>
                     {elsewhere && <span className="text-[0.65rem] text-muted-foreground">mover</span>}
                   </button>

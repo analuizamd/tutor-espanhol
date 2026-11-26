@@ -6,13 +6,12 @@ import { CONCEPTS, CONCEPT_ORDER, type Area, type ConceptCode, type Concept } fr
 
 export type Scores = Record<ConceptCode, number>;
 
-/** Eventos que alteram (ou não) a pontuação de um conceito. */
+/** Eventos que alteram (ou não) a pontuação de uma aula. */
 export type ScoreEvent =
   | "diagnostico_correta"
   | "diagnostico_errada"
   | "correta_primeira"
   | "correta_apos_dica"
-  | "parcial"
   | "errada_apos_dica"
   | "pedido_ajuda"
   | "pedido_explicacao";
@@ -23,7 +22,6 @@ export const SCORE_DELTAS: Record<ScoreEvent, number> = {
   diagnostico_errada: 0,
   correta_primeira: 15,
   correta_apos_dica: 7,
-  parcial: 3,
   errada_apos_dica: -5,
   pedido_ajuda: 0,
   pedido_explicacao: 0,
@@ -31,7 +29,7 @@ export const SCORE_DELTAS: Record<ScoreEvent, number> = {
 
 export const MIN_SCORE = 0;
 export const MAX_SCORE = 100;
-/** Pontuação mínima dos pré-requisitos para liberar um conceito. */
+/** Pontuação mínima dos pré-requisitos para liberar uma aula. */
 export const PREREQ_THRESHOLD = 50;
 
 export type Level = "basico" | "medio" | "avancado";
@@ -45,7 +43,7 @@ export function applyScoreEvent(score: number, event: ScoreEvent): number {
   return clampScore(score + SCORE_DELTAS[event]);
 }
 
-/** Atualiza o mapa de pontuações para um conceito e devolve { scores, delta } com a variação real. */
+/** Atualiza o mapa de pontuações para uma aula e devolve { scores, delta } com a variação real. */
 export function updateConceptScore(
   scores: Scores,
   code: ConceptCode,
@@ -56,7 +54,7 @@ export function updateConceptScore(
   return { scores: { ...scores, [code]: after }, delta: after - before };
 }
 
-/** Pontuação a partir da qual o conceito é considerado dominado (Avançado). */
+/** Pontuação a partir da qual a aula é considerada dominada (Avançado). */
 export const MASTERY_THRESHOLD = 70;
 
 /** Básico (< 30), Médio (30–69), Avançado (≥ 70, dominado). */
@@ -93,16 +91,16 @@ export function scoresFromDiagnostic(
   );
 }
 
-/** Um conceito está disponível se todos os pré-requisitos diretos têm pontuação ≥ 50. */
+/** Uma aula está disponível se todos os pré-requisitos diretos têm pontuação ≥ 50. */
 export function isUnlocked(concept: Concept, scores: Scores): boolean {
   return concept.prereqs.every((p) => (scores[p] ?? 0) >= PREREQ_THRESHOLD);
 }
 
 /**
- * Próximo conceito a ensinar:
- * entre os não dominados e liberados, o de menor nível no grafo;
+ * Próxima aula a ensinar:
+ * entre as não dominadas e liberadas, a de menor nível no grafo;
  * desempate pela menor pontuação e depois pela ordem dos códigos.
- * Retorna null se não houver nenhum candidato.
+ * Retorna null se não houver nenhuma candidata.
  */
 export function selectNextConcept(scores: Scores, concepts: Concept[] = CONCEPTS): ConceptCode | null {
   const order = (code: ConceptCode) => CONCEPT_ORDER.indexOf(code);
@@ -118,28 +116,24 @@ export function selectNextConcept(scores: Scores, concepts: Concept[] = CONCEPTS
 }
 
 /** Meta do dia escolhida pelo aluno. "auto" = o app escolhe. */
-export type StudyGoal = "vocabulario" | "gramatica" | "leitura" | "variedades" | "auto";
+export type StudyGoal = "a1" | "a2" | "auto";
 
 export const GOAL_LABEL: Record<StudyGoal, string> = {
-  vocabulario: "Vocabulário",
-  gramatica: "Gramática em contexto",
-  leitura: "Leitura de textos",
-  variedades: "Variedades e gírias",
+  a1: "Nível A1 · primeiros passos",
+  a2: "Nível A2 · conversas do dia a dia",
   auto: "O app escolhe por mim",
 };
 
 /** Áreas do grafo cobertas por cada meta (null = todas). */
 export const GOAL_AREAS: Record<StudyGoal, Area[] | null> = {
-  vocabulario: ["V"],
-  gramatica: ["G"],
-  leitura: ["T", "L"],
-  variedades: ["C"],
+  a1: ["A1"],
+  a2: ["A2"],
   auto: null,
 };
 
 /**
- * Próximo conceito respeitando a meta do dia: aplica a regra geral só dentro das áreas da meta.
- * Se nenhum conceito da área estiver disponível, usa a regra geral e marca fallback = true.
+ * Próxima aula respeitando a meta do dia: aplica a regra geral só dentro das áreas da meta.
+ * Se nenhuma aula da área estiver disponível, usa a regra geral e marca fallback = true.
  */
 export function selectNextConceptForGoal(
   scores: Scores,
@@ -153,38 +147,32 @@ export function selectNextConceptForGoal(
   return { code: selectNextConcept(scores, concepts), fallback: true };
 }
 
-export type ActivityKind = "flashcards" | "video" | "mission";
-
-/** Tipo de atividade pela área: V → cartões; T, L e C → vídeo com diálogo; G → missão. */
-export function chooseActivity(concept: Pick<Concept, "area">): ActivityKind {
-  if (concept.area === "V") return "flashcards";
-  if (concept.area === "G") return "mission";
-  return "video";
-}
-
-/** Resultado de uma missão: todos os passos certos de primeira = correta; maioria errada = errada; senão parcial. */
-export type MissionResult = "correta" | "parcial" | "errada";
-export function classifyMissionSteps(firstTryCorrect: boolean[]): MissionResult {
-  const ok = firstTryCorrect.filter(Boolean).length;
-  const wrong = firstTryCorrect.length - ok;
-  if (firstTryCorrect.length > 0 && wrong === 0) return "correta";
-  if (wrong > firstTryCorrect.length / 2) return "errada";
-  return "parcial";
-}
+/** Resultado de uma resposta na verificação. */
+export type AnswerResult = "correta" | "errada";
 
 /**
  * Evento de pontuação para uma resposta.
- * Erro sem nenhuma ajuda antes = 0 (sem evento); erro depois de ajuda = −5.
+ * Correta sem ajuda = +15; correta depois de dica ou da mini-aula = +7.
+ * Erro sem nenhuma ajuda antes = 0 (sem evento); erro depois de ajuda/mini-aula = −5.
  */
-export function eventForAnswer(result: MissionResult, afterHint: boolean): ScoreEvent | null {
-  if (result === "correta") return afterHint ? "correta_apos_dica" : "correta_primeira";
-  if (result === "parcial") return "parcial";
-  return afterHint ? "errada_apos_dica" : null;
+export function eventForAnswer(result: AnswerResult, afterHelp: boolean): ScoreEvent | null {
+  if (result === "correta") return afterHelp ? "correta_apos_dica" : "correta_primeira";
+  return afterHelp ? "errada_apos_dica" : null;
 }
 
-/** A fase extra (C2) aparece quando C1 e V3 chegam a 50. */
-export function isExtraPhaseUnlocked(scores: Scores): boolean {
-  return (scores.C1 ?? 0) >= PREREQ_THRESHOLD && (scores.V3 ?? 0) >= PREREQ_THRESHOLD;
+/** Como o aluno chegou (ou não) à resposta de cada pergunta da aula. */
+export type QuestionOutcome = "primeira" | "com_ajuda" | "ensinado" | "errou";
+
+export const OUTCOME_LABEL: Record<QuestionOutcome, string> = {
+  primeira: "Acertou de primeira",
+  com_ajuda: "Acertou com ajuda",
+  ensinado: "Aprendeu com a mini-aula",
+  errou: "Ainda precisa revisar",
+};
+
+/** A aula foi aprendida se nenhuma pergunta terminou em erro. */
+export function lessonLearned(outcomes: QuestionOutcome[]): boolean {
+  return outcomes.length > 0 && outcomes.every((o) => o !== "errou");
 }
 
 /** Meta diária de pontos. */

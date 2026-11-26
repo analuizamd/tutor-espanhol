@@ -27,6 +27,8 @@ export interface AppData {
   weeklyGains: Record<string, number>;
   /** Pontos ganhos por dia (meta do dia). */
   dailyGains: Record<string, number>;
+  /** Quantas vezes cada aula foi concluída (na revisão, as perguntas trocam pela variante). */
+  lessonRuns: Partial<Record<ConceptCode, number>>;
 }
 
 export function defaultAppData(): AppData {
@@ -40,6 +42,7 @@ export function defaultAppData(): AppData {
     studyDays: [],
     weeklyGains: {},
     dailyGains: {},
+    lessonRuns: {},
   };
 }
 
@@ -53,6 +56,7 @@ interface AppStateValue {
   buyItem: (itemId: string) => boolean;
   placeItem: (slotId: string, itemId: string | undefined) => void;
   recordStudy: (scoreGained: number) => void;
+  completeLesson: (code: ConceptCode) => void;
   redoDiagnostic: () => void;
   resetApp: () => void;
 }
@@ -137,9 +141,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const completeLesson = useCallback((code: ConceptCode) => {
+    setData((d) => ({ ...d, lessonRuns: { ...d.lessonRuns, [code]: (d.lessonRuns[code] ?? 0) + 1 } }));
+  }, []);
+
   const redoDiagnostic = useCallback(() => {
     window.localStorage.removeItem(SESSION_STORAGE_KEY);
-    setData((d) => ({ ...d, diagnosticDone: false, diagnosticResults: [], scores: initialScores() }));
+    setData((d) => ({ ...d, diagnosticDone: false, diagnosticResults: [], scores: initialScores(), lessonRuns: {} }));
   }, []);
 
   const resetApp = useCallback(() => {
@@ -149,8 +157,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AppStateValue>(
-    () => ({ data, hydrated, completeDiagnostic, setScores, setScore, addCoins, buyItem, placeItem, recordStudy, redoDiagnostic, resetApp }),
-    [data, hydrated, completeDiagnostic, setScores, setScore, addCoins, buyItem, placeItem, recordStudy, redoDiagnostic, resetApp],
+    () => ({ data, hydrated, completeDiagnostic, setScores, setScore, addCoins, buyItem, placeItem, recordStudy, completeLesson, redoDiagnostic, resetApp }),
+    [data, hydrated, completeDiagnostic, setScores, setScore, addCoins, buyItem, placeItem, recordStudy, completeLesson, redoDiagnostic, resetApp],
   );
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

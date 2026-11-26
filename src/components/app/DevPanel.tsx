@@ -10,10 +10,10 @@ import { Slider } from "@/components/ui/slider";
 import { CONCEPTS } from "@/data/concepts";
 import type { Scores } from "@/lib/studentModel";
 import { useAppState } from "@/state/AppState";
-import { LevelBadge } from "./LevelBadge";
+import { LevelBadge } from "./LevelIcon";
 import { getLevel } from "@/lib/studentModel";
 
-const MIXED: number[] = [85, 60, 75, 90, 40, 20, 55, 30, 72, 65, 50, 5, 25, 10, 35, 0, 15, 0, 0, 0];
+const MIXED: number[] = [85, 72, 60, 55, 40, 20, 35, 10, 0, 0, 0];
 
 export function DevPanel() {
   const { data, setScores, setScore, addCoins, redoDiagnostic, resetApp } = useAppState();

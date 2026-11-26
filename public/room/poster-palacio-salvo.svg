@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160">
+  <defs>
+    <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b4965"/>
+      <stop offset="1" stop-color="#62b6cb"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="114" height="154" rx="3" fill="#f2e9dc"/>
+  <rect x="9" y="9" width="102" height="142" fill="url(#sky2)"/>
+  <g fill="#fcd116" opacity="0.9"><circle cx="24" cy="24" r="1.2"/><circle cx="96" cy="30" r="1"/><circle cx="84" cy="18" r="1.2"/><circle cx="34" cy="40" r="0.9"/></g>
+  <g fill="#e8d8c3">
+    <rect x="30" y="76" width="60" height="54"/>
+    <rect x="40" y="56" width="40" height="22"/>
+    <rect x="48" y="38" width="24" height="20"/>
+    <rect x="53" y="26" width="14" height="14"/>
+    <polygon points="53,26 60,10 67,26"/>
+    <rect x="59" y="4" width="2" height="8"/>
+  </g>
+  <g fill="#c7b299">
+    <rect x="60" y="76" width="30" height="54"/><rect x="60" y="56" width="20" height="22"/><rect x="60" y="38" width="12" height="20"/><rect x="60" y="26" width="7" height="14"/>
+  </g>
+  <g fill="#f6c445">
+    <rect x="35" y="82" width="5" height="6"/><rect x="45" y="82" width="5" height="6"/><rect x="70" y="82" width="5" height="6"/><rect x="80" y="82" width="5" height="6"/>
+    <rect x="35" y="96" width="5" height="6"/><rect x="55" y="96" width="5" height="6"/><rect x="80" y="96" width="5" height="6"/>
+    <rect x="45" y="110" width="5" height="6"/><rect x="70" y="110" width="5" height="6"/>
+    <rect x="46" y="62" width="4" height="5"/><rect x="58" y="62" width="4" height="5"/><rect x="70" y="62" width="4" height="5"/>
+    <rect x="54" y="44" width="4" height="5"/><rect x="62" y="44" width="4" height="5"/>
+  </g>
+  <rect x="9" y="128" width="102" height="23" fill="#0b2545"/>
+  <text x="60" y="144" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="12" letter-spacing="1.2" fill="#ffffff">MONTEVIDEO</text>
+</svg>

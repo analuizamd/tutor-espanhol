@@ -18,17 +18,14 @@ export const LEVEL_BAR_CLASS: Record<Level, string> = {
   avancado: "bg-level-avancado",
 };
 
-/** Classes de cor por área do grafo (V laranja, G azul, T roxo, L verde, C rosa). */
+/** Classes de cor por nível do quadro europeu (A1 laranja, A2 azul). */
 export const AREA_CLASS: Record<Area, { solid: string; soft: string; text: string; fill: string }> = {
-  V: { solid: "bg-area-v", soft: "bg-area-v-soft", text: "text-area-v", fill: "fill-area-v-soft stroke-area-v" },
-  G: { solid: "bg-area-g", soft: "bg-area-g-soft", text: "text-area-g", fill: "fill-area-g-soft stroke-area-g" },
-  T: { solid: "bg-area-t", soft: "bg-area-t-soft", text: "text-area-t", fill: "fill-area-t-soft stroke-area-t" },
-  L: { solid: "bg-area-l", soft: "bg-area-l-soft", text: "text-area-l", fill: "fill-area-l-soft stroke-area-l" },
-  C: { solid: "bg-area-c", soft: "bg-area-c-soft", text: "text-area-c", fill: "fill-area-c-soft stroke-area-c" },
+  A1: { solid: "bg-area-v", soft: "bg-area-v-soft", text: "text-area-v", fill: "fill-area-v-soft stroke-area-v" },
+  A2: { solid: "bg-area-g", soft: "bg-area-g-soft", text: "text-area-g", fill: "fill-area-g-soft stroke-area-g" },
 };
 
 /** Selo pequeno do nível (Básico cinza, Médio azul, Avançado verde). */
-export function LevelBadge({ level, className }: { level: Level; className?: string }) {
+export function LevelBadge({ level, className }: { level: Level; className?: string | undefined }) {
   return (
     <span
       className={cn(
