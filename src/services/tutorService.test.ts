@@ -1,30 +1,66 @@
 import { describe, expect, it } from "vitest";
 
-import { DIALOGUES } from "@/data/dialogues";
-import { MISSIONS } from "@/data/missions";
-import { classifyAnswer, getExplanation, getHint } from "./tutorService";
-import { CONCEPT_BY_CODE } from "@/data/concepts";
+import { CONCEPT_BY_CODE, CONCEPTS } from "@/data/concepts";
+import { normalizeWord, lookupWord } from "@/data/dictionary";
+import { CAST, LESSON_BY_CONCEPT, VIDEO_LESSONS } from "@/data/videos";
+import { getExplanation, getFeedback, getHint, getTeaching, translateWord } from "./tutorService";
 
-const q = DIALOGUES[0]!.questions[0]!;
+const lesson = VIDEO_LESSONS[0]!;
+const question = lesson.questions[0]!;
+const concept = CONCEPT_BY_CODE[lesson.conceptCode];
 
 describe("tutor simulado", () => {
-  it("missão: correta, parcial e errada", () => {
-    expect(classifyAnswer([true, true, true])).toBe("correta");
-    expect(classifyAnswer([true, true, false])).toBe("parcial");
-    expect(classifyAnswer([false, false, true])).toBe("errada");
-  });
   it("explicação em português no Básico e em espanhol no Avançado", () => {
-    expect(getExplanation(CONCEPT_BY_CODE.G1, 10).language).toBe("pt");
-    expect(getExplanation(CONCEPT_BY_CODE.G1, 80).language).toBe("es");
+    expect(getExplanation(concept, 10).language).toBe("pt");
+    expect(getExplanation(concept, 80).language).toBe("es");
   });
-  it("o degrau 4 da dica mostra a alternativa correta", () => {
-    expect(getHint(4, q, "L1", 10).text).toContain(q.options[q.correctIndex]);
+  it("degrau 3 mostra o trecho do vídeo e o degrau 4 a resposta", () => {
+    expect(getHint(3, question.main, question, lesson, concept, 10).text).toContain(lesson.lines[question.lineIndex]!.es);
+    expect(getHint(4, question.main, question, lesson, concept, 10).text).toContain(question.main.options[question.main.correctIndex]!);
   });
-  it("toda missão tem 3 ou 4 passos com 3 falas", () => {
-    for (const m of MISSIONS) {
-      expect(m.steps.length).toBeGreaterThanOrEqual(3);
-      expect(m.steps.length).toBeLessThanOrEqual(4);
-      for (const s of m.steps) expect(s.options).toHaveLength(3);
+  it("mini-aula traz o trecho do vídeo e cita a alternativa errada", () => {
+    const t = getTeaching(question, lesson, "Lucía");
+    expect(t.line?.es).toBe(lesson.lines[question.lineIndex]!.es);
+    expect(t.intro).toContain("Lucía");
+  });
+  it("feedback sempre mostra a forma correta quando a re-verificação falha", () => {
+    expect(getFeedback(false, "Diego", 10, "retry").text).toContain("Diego");
+  });
+  it("traduz palavra da legenda e sempre devolve a frase", async () => {
+    const line = lesson.lines[3]!;
+    const t = await translateWord("llamo.", line);
+    expect(t.meaning).toContain("chamo");
+    expect(t.sentencePt).toBe(line.pt);
+  });
+});
+
+describe("conteúdo dos vídeos", () => {
+  it("toda aula tem um vídeo", () => {
+    for (const c of CONCEPTS) expect(LESSON_BY_CONCEPT[c.code], c.code).toBeDefined();
+  });
+  it("perguntas apontam para falas que existem e têm alternativa correta válida", () => {
+    for (const l of VIDEO_LESSONS) {
+      expect(l.questions.length, l.id).toBeGreaterThanOrEqual(3);
+      for (const q of l.questions) {
+        expect(l.lines[q.lineIndex], q.id).toBeDefined();
+        for (const item of [q.main, q.retry]) {
+          expect(item.options[item.correctIndex], q.id).toBeDefined();
+          expect(new Set(item.options).size, `${q.id} alternativas repetidas`).toBe(item.options.length);
+        }
+      }
     }
+  });
+  it("todos os personagens estão no elenco", () => {
+    for (const l of VIDEO_LESSONS) for (const line of l.lines) expect(CAST[line.speaker], `${l.id}: ${line.speaker}`).toBeDefined();
+  });
+  it("toda palavra das legendas tem tradução no dicionário", () => {
+    const missing = new Set<string>();
+    for (const l of VIDEO_LESSONS)
+      for (const line of l.lines)
+        for (const w of line.es.split(/\s+/)) {
+          const n = normalizeWord(w);
+          if (n && !lookupWord(n)) missing.add(n);
+        }
+    expect([...missing]).toEqual([]);
   });
 });

@@ -1,9 +1,9 @@
 /**
- * Mapa dos 18 conceitos como grafo (SVG): colunas por nível, setas dos pré-requisitos
- * para os conceitos, nós coloridos por área, com selo de domínio.
+ * Mapa das aulas A1/A2 como grafo (SVG): colunas por nível, setas dos pré-requisitos
+ * para as aulas, nós coloridos por nível do quadro europeu, com selo de domínio.
  */
 import { CONCEPTS, CONCEPT_BY_CODE, type ConceptCode } from "@/data/concepts";
-import { getLevel, type Scores } from "@/lib/studentModel";
+import { getLevel, PREREQ_THRESHOLD, type Scores } from "@/lib/studentModel";
 import { cn } from "@/lib/utils";
 import { AREA_CLASS, LevelBadge } from "@/components/app/LevelIcon";
 
@@ -15,11 +15,11 @@ const PAD = 28;
 
 /** Ordem vertical dentro de cada nível (reduz cruzamentos de setas). */
 const COLUMN_ORDER: ConceptCode[][] = [
-  ["V1", "G1", "T1"],
-  ["V2", "V3", "V4", "G2", "G4"],
-  ["G3", "L1", "C1"],
-  ["L2", "L3", "L4", "G5", "C2"],
-  ["L5", "L6"],
+  ["A1.1"],
+  ["A1.2", "A1.3"],
+  ["A1.4", "A1.5"],
+  ["A2.1", "A2.2", "A2.3"],
+  ["A2.5", "A2.4", "A2.6"],
 ];
 const MAX_ROWS = Math.max(...COLUMN_ORDER.map((c) => c.length));
 export const GRAPH_WIDTH = PAD * 2 + COL_GAP * 4 + NODE_W;
@@ -48,7 +48,7 @@ export function ConceptGraph({
   selected: ConceptCode | null;
 }) {
   return (
-    <svg viewBox={`0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}`} className="h-auto w-full" role="group" aria-label="Mapa de conceitos">
+    <svg viewBox={`0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}`} className="h-auto w-full" role="group" aria-label="Mapa das aulas">
       <defs>
         <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M 0 0 L 10 5 L 0 10 z" className="fill-muted-foreground/60" />
@@ -78,7 +78,7 @@ export function ConceptGraph({
           const x2 = b.x - 4;
           const y2 = b.y + NODE_H / 2;
           const mx = (x1 + x2) / 2;
-          const unlocked = (scores[p] ?? 0) >= 50;
+          const unlocked = (scores[p] ?? 0) >= PREREQ_THRESHOLD;
           return (
             <path
               key={`${p}-${c.code}`}
@@ -119,7 +119,6 @@ export function ConceptGraph({
               width={NODE_W}
               height={NODE_H}
               rx={8}
-              strokeDasharray={c.extra ? "6 4" : undefined}
               strokeWidth={isNext || isSelected ? 3 : 1.5}
               className={cn(AREA_CLASS[c.area].fill, isNext && "stroke-primary", "transition-all")}
             />
@@ -129,7 +128,6 @@ export function ConceptGraph({
                   <div className="flex items-center gap-1.5">
                     <span className="font-display text-[13px] font-extrabold text-foreground">{c.code}</span>
                     <LevelBadge level={level} />
-                    {c.extra && <span className="text-[10px] font-bold text-area-c">Extra</span>}
                   </div>
                   <div className="text-[11.5px] font-medium leading-tight text-foreground/80">{c.name}</div>
                 </div>

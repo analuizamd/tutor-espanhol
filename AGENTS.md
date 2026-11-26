@@ -35,4 +35,5 @@ use the editor.
 - All tutor behaviour goes through `src/services/tutorService.ts` (mocked today). Why: a real LLM must be pluggable without touching UI.
 - Scoring, levels, next-concept selection and coin formula are pure functions in `src/lib/studentModel.ts`, with tests next to them. Why: easy to read, test and demo.
 - Concept graph data lives in `src/data/concepts.ts`; mock questions, shop, room slots and friends live in separate `src/data/*` files. Why: content is editable without touching logic.
+- Video lesson scripts and check questions live in `src/data/videos.ts`; generated videos go in `public/videos/<id>.mp4` + `<id>.vtt` (one cue per line, same order). `docs/videos/ROTEIROS.md` is the hand-off for whoever generates the videos — keep it in sync when a line changes. Why: subtitles are matched to script lines by order.
 - The product name comes only from `APP_NAME` in `src/config/app.ts`. Why: the name is a placeholder.

@@ -1,23 +1,25 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, Check, Lock } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { ArrowRight, Check, Lock, PlayCircle } from "lucide-react";
 import { useState } from "react";
 
-import { AREA_CLASS, LevelBadge, LevelPill, ScoreBar } from "@/components/app/LevelBadge";
+import { AREA_CLASS, LevelBadge, LevelPill, ScoreBar } from "@/components/app/LevelIcon";
 import { ConceptGraph, GRAPH_WIDTH } from "@/components/progress/ConceptGraph";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { APP_NAME } from "@/config/app";
 import { CONCEPTS, CONCEPT_BY_CODE, AREA_LABEL, type Area, type ConceptCode } from "@/data/concepts";
 import { getLevel, isUnlocked, PREREQ_THRESHOLD, selectNextConcept } from "@/lib/studentModel";
 import { Button } from "@/components/ui/button";
+import { LESSON_BY_CONCEPT } from "@/data/videos";
 import { useAppState } from "@/state/AppState";
+import { useStudySession } from "@/state/StudySession";
 
 export const Route = createFileRoute("/progresso")({
   head: () => ({
     meta: [
       { title: `Progresso · ${APP_NAME}` },
-      { name: "description", content: "Mapa dos 18 conceitos de espanhol do ENEM: acompanhe seu domínio e os próximos passos." },
+      { name: "description", content: "Mapa das aulas de espanhol A1 e A2: acompanhe seu domínio e os próximos passos." },
       { property: "og:title", content: `Progresso · ${APP_NAME}` },
-      { property: "og:description", content: "Mapa dos 18 conceitos de espanhol do ENEM: acompanhe seu domínio e os próximos passos." },
+      { property: "og:description", content: "Mapa das aulas de espanhol A1 e A2: acompanhe seu domínio e os próximos passos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -36,7 +38,7 @@ function ProgressPage() {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
       <h1 className="text-3xl font-extrabold">Progresso</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        As setas mostram os pré-requisitos. Um conceito é liberado quando seus pré-requisitos chegam a {PREREQ_THRESHOLD} pontos.
+        As setas mostram os pré-requisitos. Uma aula é liberada quando as aulas anteriores chegam a {PREREQ_THRESHOLD} pontos.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -78,7 +80,11 @@ function Legend({ level, label, count }: { level: "basico" | "medio" | "avancado
 
 function ConceptDrawer({ code, onClose, isNext }: { code: ConceptCode | null; onClose: () => void; isNext: boolean }) {
   const { data } = useAppState();
+  const study = useStudySession();
+  const navigate = useNavigate();
   const concept = code ? CONCEPT_BY_CODE[code] : null;
+  const lesson = concept ? LESSON_BY_CONCEPT[concept.code] : null;
+  const unlocked = concept ? isUnlocked(concept, data.scores) : false;
   const dependents = concept ? CONCEPTS.filter((c) => c.prereqs.includes(concept.code)) : [];
   return (
     <Sheet open={!!concept} onOpenChange={(o) => !o && onClose()}>
@@ -88,12 +94,13 @@ function ConceptDrawer({ code, onClose, isNext }: { code: ConceptCode | null; on
             <SheetHeader>
               <div className="flex items-center gap-2">
                 <span className="rounded-lg bg-ocean px-2 py-1 font-display text-sm font-extrabold text-ocean-foreground">{concept.code}</span>
-                <span className="text-xs font-semibold text-muted-foreground">Nível {concept.level} do mapa</span>
+                <span className="text-xs font-semibold text-muted-foreground">{AREA_LABEL[concept.area]}</span>
                 {isNext && <span className="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground">Próximo</span>}
               </div>
               <SheetTitle className="font-display text-2xl">{concept.name}</SheetTitle>
               <SheetDescription>
-                {isUnlocked(concept, data.scores) ? "Conceito liberado." : "Ainda bloqueado: fortaleça os pré-requisitos."}
+                {lesson && <span lang="es" className="font-semibold text-foreground">Vídeo: {lesson.title}. </span>}
+                {unlocked ? "Aula liberada." : "Ainda bloqueada: fortaleça as aulas anteriores."}
               </SheetDescription>
             </SheetHeader>
 
@@ -143,6 +150,20 @@ function ConceptDrawer({ code, onClose, isNext }: { code: ConceptCode | null; on
 
             <h3 className="mt-6 text-sm font-bold">Resumo</h3>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{concept.explanationPt}</p>
+
+            <Button
+              variant="hero"
+              size="xl"
+              className="mt-6 w-full"
+              disabled={!unlocked || study.session.status === "ended"}
+              onClick={() => {
+                study.startLesson(concept.code);
+                onClose();
+                void navigate({ to: "/" });
+              }}
+            >
+              <PlayCircle /> Estudar esta aula
+            </Button>
           </>
         )}
       </SheetContent>

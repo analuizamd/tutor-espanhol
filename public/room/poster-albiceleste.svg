@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160">
+  <rect x="3" y="3" width="114" height="154" rx="3" fill="#7a4a24"/>
+  <rect x="9" y="9" width="102" height="142" fill="#13294b"/>
+  <circle cx="60" cy="70" r="44" fill="#1d3b6e"/>
+  <g fill="#f6c445">
+    <polygon points="44,22 46,27 51,27 47,30 48.5,35 44,32 39.5,35 41,30 37,27 42,27"/>
+    <polygon points="60,18 62,23 67,23 63,26 64.5,31 60,28 55.5,31 57,26 53,23 58,23"/>
+    <polygon points="76,22 78,27 83,27 79,30 80.5,35 76,32 71.5,35 73,30 69,27 74,27"/>
+  </g>
+  <defs>
+    <clipPath id="shirt">
+      <path d="M44 40 L52 36 Q60 44 68 36 L76 40 L96 56 L86 70 L80 65 L80 124 L40 124 L40 65 L34 70 L24 56 Z"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#shirt)">
+    <rect x="20" y="30" width="80" height="100" fill="#ffffff"/>
+    <rect x="28" y="30" width="8" height="100" fill="#75aadb"/>
+    <rect x="44" y="30" width="8" height="100" fill="#75aadb"/>
+    <rect x="68" y="30" width="8" height="100" fill="#75aadb"/>
+    <rect x="84" y="30" width="8" height="100" fill="#75aadb"/>
+    <rect x="20" y="30" width="80" height="6" fill="#13294b" opacity="0.15"/>
+  </g>
+  <path d="M44 40 L52 36 Q60 44 68 36 L76 40 L96 56 L86 70 L80 65 L80 124 L40 124 L40 65 L34 70 L24 56 Z" fill="none" stroke="#0b1a33" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M52 36 Q60 47 68 36" fill="none" stroke="#0b1a33" stroke-width="2.5"/>
+  <text x="60" y="96" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="34" fill="#13294b" stroke="#ffffff" stroke-width="1">10</text>
+  <text x="60" y="142" text-anchor="middle" font-family="Arial Black, Arial, Helvetica, sans-serif" font-weight="900" font-size="12" letter-spacing="1.5" fill="#f6c445">ARGENTINA</text>
+</svg>
